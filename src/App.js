@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react';
 function App() {
   const API_URL = 'https://axiomatic-marshy-galley.glitch.me/groceries'
   console.log('ehehe');
+  console.log('pls');
   const [items, setItems] = useState([]);
   const [newItem, setNewItem] = useState('')
   const [search, setSearch] = useState('')
