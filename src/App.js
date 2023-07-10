@@ -7,27 +7,50 @@ import { useState, useEffect } from 'react';
 
 function App() {
   const API_URL = 'https://axiomatic-marshy-galley.glitch.me/groceries'
-  console.log('ehehe');
-  console.log('pls');
+ 
+  
   const [items, setItems] = useState([]);
   const [newItem, setNewItem] = useState('')
   const [search, setSearch] = useState('')
 
   useEffect(() => {
     const fetchItems = async () => {
-      try{
+      try {
         const response = await fetch(API_URL, {
-          headers: { 'Authorization': 'Bearer ' + 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9'.eyJVc2VySW5mbyI6eyJ1c2VybmFtZSI6IkRpb2dvIiwicm9sZXMiOlsyMDAxLDE5ODQsNTE1MF19LCJpYXQiOjE2ODkwMDMwODUsImV4cCI6MTY4OTA4OTQ4NX0.tSZUnNU554UR5nuQ4kxRShtqP2_vdK3gWn9E9dmQYIY }});
-        const listItems = await response.json();
-        console.log(listItems);
-        setItems(listItems);
-      } catch (err){
+          headers: {
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySW5mbyI6eyJ1c2VybmFtZSI6IkRpb2dvIiwicm9sZXMiOlsyMDAxLDE5ODQsNTE1MF19LCJpYXQiOjE2ODkwMDMwODUsImV4cCI6MTY4OTA4OTQ4NX0.tSZUnNU554UR5nuQ4kxRShtqP2_vdK3gWn9E9dmQYIY'
+          }
+        });
+          const Items = await response.json();
+           if (Items) {
+            
+          console.log(Items);
+          console.log();
+          
+            let name, id, checked;
+          const items = Items.map(item => [
+            name,
+            id,
+            checked
+          ] = [
+            item.name,
+            item.id,
+            false
+          ], )
+          console.log(items);
+          setItems(items);
+        
+        }
+        setItems([])
+        
+      } catch (err) {
         console.log(err.stack);
       }
-    }
-
-    (async () => await fetchItems())()
-  }, [])
+    };
+  
+    fetchItems();
+  }, []);
+  
 
   const addItem = (item) => {
     const id = items.length ? items[items.length - 1].id + 1 : 1;
@@ -66,9 +89,10 @@ function App() {
         setSearch={setSearch}
       />
       <Content
-        items={items.filter(item => ((item.item).toLowerCase()).includes(search.toLowerCase()))}
+        itemss={items.filter(item => ((item[0]).toLowerCase()).includes(search.toLowerCase()))}
         handleCheck={handleCheck}
         handleDelete={handleDelete}
+        items={items}
       />
       <Footer length={items.length} />
     </div>
