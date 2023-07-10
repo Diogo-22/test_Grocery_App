@@ -16,7 +16,8 @@ function App() {
   useEffect(() => {
     const fetchItems = async () => {
       try{
-        const response = await fetch(API_URL);
+        const response = await fetch(API_URL, {
+          headers: {Authentication: 'Bearer {eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySW5mbyI6eyJ1c2VybmFtZSI6IkRpb2dvIiwicm9sZXMiOlsyMDAxLDE5ODQsNTE1MF19LCJpYXQiOjE2ODkwMDMwODUsImV4cCI6MTY4OTA4OTQ4NX0.tSZUnNU554UR5nuQ4kxRShtqP2_vdK3gWn9E9dmQYIY}'}});
         const listItems = await response.json();
         console.log(listItems);
         setItems(listItems);
