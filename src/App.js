@@ -26,7 +26,7 @@ function App() {
       }
     }
 
-    (async () => await fetchItems())
+    (async () => await fetchItems())()
   }, [])
 
   const addItem = (item) => {
