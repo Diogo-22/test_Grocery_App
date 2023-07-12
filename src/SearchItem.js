@@ -1,4 +1,6 @@
-const SearchItem = ({ search, setSearch }) => {
+const SearchItem = ({items, search, setSearch }) => {
+   /*  console.log(search)
+    console.log(items.filter(item => item[0].toLowerCase().includes(search.toLowerCase()))) */
     return (
         <form className='searchForm' onSubmit={(e) => e.preventDefault()}>
             <label htmlFor='search'>Search</label>
