@@ -1,19 +1,46 @@
-import Header from './Header';
-import SearchItem from './SearchItem';
-import AddItem from './AddItem';
-import Content from './Content';
-import Footer from './Footer';
+import Layout from './Layout';
+import LoggerPage from './LoggerPage';
 import { useState, useEffect } from 'react';
+import MainPage from './MainPage';
+import {useNavigate, Route, Routes} from 'react-router-dom'
+import Missing from './Missing';
+
 
 function App() {
   const API_URL = 'https://axiomatic-marshy-galley.glitch.me/groceries'
+  const navigate = useNavigate();
  
   const [items, setItems] = useState([]);
   const [newItem, setNewItem] = useState('')
   const [search, setSearch] = useState('')
   const [reqType, setReqType] = useState('')
+  const [loading, setLoading] = useState(true)
+  const [logged, setLogged] = useState(false)
+  const [bToken, setbToken] = useState('')
+  const [user, setUser] = useState('')
+  const [pwd, setPwd] = useState('')
+  const [load, setLoad] = useState(false)
   useEffect(() => {
     const updateDB = async () => {
+      if (logged === false) return console.log('nothing to send');
+      console.log(`Bearer ${bToken}`)
+
+      const response = fetch("https://axiomatic-marshy-galley.glitch.me/verify", {
+          method: "POST",
+          headers: {
+             'Authorization': 'Bearer ' + bToken
+            }})
+            console.log(response.status)
+      if ( response.status != 200 ) {
+        const refresh = fetch("https://axiomatic-marshy-galley.glitch.me/refresh", {
+          method: "GET",
+          credentials: 'include'
+        })
+        
+        console.log(refresh.status)
+
+      } else if (response.status === 200) {
+
       if (reqType === ''){
         return console.log('nothing to send')
       }
@@ -23,8 +50,8 @@ function App() {
           method: "PUT",
           headers: {
             "Content-type": "application/json; charset=UTF-8",
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySW5mbyI6eyJ1c2VybmFtZSI6IkRpb2dvIiwicm9sZXMiOlsyMDAxLDE5ODQsNTE1MF19LCJpYXQiOjE2ODkxNTIwMDYsImV4cCI6MTY4OTIzODQwNn0.pAKRNFOS7tt3kR_ZN2BGQi1AzzkygOVEeaT7l2une5c'
-          },
+            'Authorization': 'Bearer ' + bToken
+                },
           body: JSON.stringify(
               {
                 "name": item.name,
@@ -42,8 +69,8 @@ function App() {
           method: "POST",
           headers: {
             "Content-type": "application/json",
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySW5mbyI6eyJ1c2VybmFtZSI6IkRpb2dvIiwicm9sZXMiOlsyMDAxLDE5ODQsNTE1MF19LCJpYXQiOjE2ODkxNTIwMDYsImV4cCI6MTY4OTIzODQwNn0.pAKRNFOS7tt3kR_ZN2BGQi1AzzkygOVEeaT7l2une5c'
-          },
+            'Authorization': 'Bearer ' + bToken
+              },
           body: JSON.stringify(
               {
                 "name": newItem.name,
@@ -57,107 +84,151 @@ function App() {
       else  {
         console.log('Not sure why it reached this log..')
       }
+    }
    }
     updateDB()
   }, [items])
 
   useEffect(() => {
-    const fetchItems = async () => {
-      try {
-        const response = await fetch(API_URL, {
-          headers: {
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySW5mbyI6eyJ1c2VybmFtZSI6IkRpb2dvIiwicm9sZXMiOlsyMDAxLDE5ODQsNTE1MF19LCJpYXQiOjE2ODkxNTIwMDYsImV4cCI6MTY4OTIzODQwNn0.pAKRNFOS7tt3kR_ZN2BGQi1AzzkygOVEeaT7l2une5c'
+    if (logged === false) {   
+      navigate('/login')
+   }
+  }, [])
+
+  useEffect(() => {
+          
+       const fetchItems = async () => {
+       
+        if (logged === true) {
+
+          try {
+            const response = await fetch(API_URL, {
+              headers: {
+                'Authorization': 'Bearer ' + bToken
+              }
+            });
+              const Items = await response.json();
+
+              if (Items) {
+              const items = Items 
+              
+              setItems(items);    
+            } else {
+              setItems([])
+            }
+          } catch (err) {
+            console.log(err.stack);
           }
-        });
-          const Items = await response.json();
-           if (Items) {
-            console.log(Items)
-          const items = Items
-         
-          setItems(items);    
-        } else {
-          setItems([])
-        }
-        
-      } catch (err) {
-        console.log(err.stack);
+          setLoading(false)
       }
     };
     fetchItems();
-  }, []);
+  }, [load]);
+ 
+const addItem = (item) => {    
+  const id = items.length ? items[items.length - 1].id + 1 : 1;
+  const myNewItem = {
+    "name": item,
+    "id": id,
+    "checked": false
+  } 
+  setNewItem(myNewItem)
+  const listItems = [...items, myNewItem];
+  setReqType(myNewItem)
+  setItems(listItems);
+}
 
-  const addItem = (item) => {    
-    const id = items.length ? items[items.length - 1].id + 1 : 1;
-    const myNewItem = {
-      "name": item,
-      "id": id,
-      "checked": false
-    } 
-    setNewItem(myNewItem)
-    const listItems = [...items, myNewItem];
-    setReqType(myNewItem)
-    setItems(listItems);
+const handleCheck = (id) => {
+  setReqType('PUT')
+  const listItems = items.map(item => item.id === id ? {
+    "name": item.name,
+    "id": id,
+    "checked": !item.checked
+  }  : item);
+  setItems(listItems);
+}
+
+const handleDelete = async (id) => { 
+  const listItems = items.filter(item => item.id !== id);
+  await fetch("https://axiomatic-marshy-galley.glitch.me/groceries", {
+    method: "DELETE",
+    headers: {
+      "Content-type": "application/json",
+      'Authorization': 'Bearer ' + bToken
+    },
+    body: JSON.stringify({
+       "id": id
+    })
   }
+  ) 
+  setItems(listItems);
+}
 
-  const handleCheck = (id) => {
-    setReqType('PUT')
-    const listItems = items.map(item => item.id === id ? {
-      "name": item.name,
-      "id": id,
-      "checked": !item.checked
-    }  : item);
-    setItems(listItems);
-  }
+const handleSubmit = (e) => {
+  e.preventDefault();
+  if (!newItem) return;
+  addItem(newItem);
+}
 
-  const handleDelete = async (id) => {
-    
-    const listItems = items.filter(item => item.id !== id);
-    
-    await fetch("https://axiomatic-marshy-galley.glitch.me/groceries", {
-      method: "DELETE",
-      headers: {
-        "Content-type": "application/json",
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySW5mbyI6eyJ1c2VybmFtZSI6IkRpb2dvIiwicm9sZXMiOlsyMDAxLDE5ODQsNTE1MF19LCJpYXQiOjE2ODkxNTIwMDYsImV4cCI6MTY4OTIzODQwNn0.pAKRNFOS7tt3kR_ZN2BGQi1AzzkygOVEeaT7l2une5c'
-      },
-      body: JSON.stringify({
-         "id": id
-      })
-    }
-    )
-    //setReqType('PUT')
-    setItems(listItems);
-
-  }
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!newItem) return;
-    addItem(newItem);
-  }
+const loginuser = async () => {
+ 
+      if (user && pwd) {
+       const response =  await fetch('https://axiomatic-marshy-galley.glitch.me/auth', {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+         },
+          body: JSON.stringify(
+            {
+              "user": `${user}`,
+            "pwd": `${pwd}`
+          }
+        )       
+        })
+              
+        if (response.status === 200) {
+          const logIn = await response.json()
+        setLogged(true)
+        setbToken(logIn.accessToken)
+        setLoad(true)
+        navigate('/')
+       } 
+       else {
+        alert('Wrong username or password!')
+       }
    
-
+      }
+    }
   return (
-    <div className="App">
-      <Header title="Grocery List" />
-      <AddItem
-        newItem={newItem}
-        setNewItem={setNewItem}
-        handleSubmit={handleSubmit}
-       
-      />
-      <SearchItem
+    
+    <div className="App">      
+      <Routes>
+        <Route path="/" element={<Layout 
         items={items}
-        search={search}
-        setSearch={setSearch}
-      />
-      <Content
-        search={search}
-        handleCheck={handleCheck}
-        handleDelete={handleDelete}
-        items={items}
-        
-      />
-      <Footer length={items.length} />
+        />}>
+          <Route index element={<MainPage 
+          items={items}
+          loading={loading}
+          newItem={newItem}
+          setNewItem={setNewItem}
+          handleSubmit={handleSubmit}
+          search={search}
+          setSearch={setSearch}
+          handleCheck={handleCheck}
+          handleDelete={handleDelete}
+          />} />
+          <Route path="login" index element={<LoggerPage 
+          user={user}
+          setUser={setUser}
+          pwd={pwd}
+          setPwd={setPwd}
+          loginuser={loginuser}
+          />}/>
+          <Route path="*" element={<Missing />}/>
+          
+        </Route>
+      </Routes>
+
     </div>
   );
 }

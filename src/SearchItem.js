@@ -1,4 +1,4 @@
-const SearchItem = ({items, search, setSearch }) => {
+const SearchItem = ({search, setSearch }) => {
    /*  console.log(search)
     console.log(items.filter(item => item[0].toLowerCase().includes(search.toLowerCase()))) */
     return (

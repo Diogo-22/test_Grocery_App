@@ -17,6 +17,67 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* .login {
+  display:block;
+  position:absolute;
+  top: 5px;
+  right: 5px;
+  border: 3px solid black ;
+  border-radius: 15%;
+  padding: 0.35em;
+} */
+.logButton {
+  border: 3px solid greenyellow;
+  border-radius: 20%;
+  
+}
+
+.Nav {
+  width: 100%;
+  background-color: #333;
+  display: flex;
+  flex-direction: column;
+  
+}
+
+.Nav ul {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #fff;
+  list-style-type: none;
+  display: flex;
+  flex-wrap: nowrap;
+  
+}
+
+.Nav li {
+  padding: 0.8rem;
+}
+
+.Nav li:hover, 
+.Nav li:focus {
+  padding: 1rem;
+}
+
+.Nav li a {
+  color: #ffffffdb;
+  text-decoration: none;
+}
+
+.Nav li:hover, 
+.Nav li:focus, 
+.Nav li:hover a, 
+.Nav li:focus a  {
+  background-color: #ffffff;
+  color: #333;
+}
+
+.Nav li:hover a, 
+.Nav li:focus a {
+  cursor: pointer;
+}
+
 .App {
   display: flex;
   flex-direction: column;
@@ -48,6 +109,8 @@ main {
   align-items: center;
   overflow-y: auto;
 }
+
+
 
 footer {
   width: 100%;
@@ -126,6 +189,29 @@ ul li::before {
   border-bottom: 1px solid #eee;
 }
 
+.loginForm {
+ display: flex;
+ flex-direction: column;
+ align-items:center;
+}
+
+.loginForm label {
+  position: absolute;
+  left: -99999px;
+}
+
+.loginForm input[type='text'] {
+  flex-grow: 1;
+  max-width: calc(100% - 50px);
+  min-height: 48px;
+  font-size: 1rem;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  margin-right: 0.25rem;
+  outline: none;
+  margin: 0.35rem 0rem;
+}
+
 .addForm label {
   position: absolute;
   left: -99999px;
@@ -140,6 +226,17 @@ ul li::before {
   border-radius: 0.25rem;
   margin-right: 0.25rem;
   outline: none;
+}
+
+.loginButton{
+  height: 48px;
+  min-width: 300px;
+  border-radius: 0.25rem;
+  padding: 0.5rem;
+  font-size: 1rem;
+  background-color: aliceblue;
+  color: mediumblue;
+  cursor: pointer;
 }
 
 button {

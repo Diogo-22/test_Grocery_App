@@ -1,8 +1,9 @@
 import ItemList from './ItemList';
 
-const Content = ({ search, handleCheck, handleDelete, items }) => {
-      let searchedItems = items.filter(item => item.name.toLowerCase().includes(search.toLowerCase()))
-    //console.log('searchItems')
+const Content = ({loading, search, handleCheck, handleDelete, items }) => {
+    
+        let searchedItems = items.filter(item => item.name.toLowerCase().includes(search.toLowerCase()))
+     
     return (
         <main>
             {items.length ? (
@@ -13,6 +14,8 @@ const Content = ({ search, handleCheck, handleDelete, items }) => {
                     handleDelete={handleDelete}
                     
                 />
+            ) : loading === true ? (
+                <p style={{ marginTop: '2rem' }}>Your list is loading...</p>
             ) : (
                 <p style={{ marginTop: '2rem' }}>Your list is empty.</p>
             )}
